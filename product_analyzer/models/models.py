@@ -67,7 +67,7 @@ class ProductAnalyzerSheet(models.Model):
     actual_cut = fields.Float(string='Actual Cut')
     completed = fields.Date(string='Completed')
 
-    @api.depends('inventory', 'send_in')
+    @api.depends('inventory', 'send_in', 'direct', 'inbound')
     def _compute_production(self):
         for record in self:
             record.production = record.send_in - record.inventory
