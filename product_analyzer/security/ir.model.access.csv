@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_product_analyzer,product_analyzer,model_product_analyzer,base.group_user,1,1,1,1
+access_product_analyzer_sheet,product_analyzer_sheet,model_product_analyzer_sheet,base.group_user,1,1,1,1
