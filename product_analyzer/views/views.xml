@@ -27,7 +27,7 @@
                                 <field name="create_date" readonly="True" colspan="3"/>
                                 <field name="start_date" colspan="3"/>
                                 <field name="categ_id" colspan="3"/>
-                                <button string="Generate Sheet" class="btn-primary"/>
+                                <button string="Generate Sheet" type="object" name="generate_sheet" class="btn-primary"/>
                             </group>
                         </group>
                         <field name="line_ids"/>
@@ -41,8 +41,8 @@
             <field name="model">product_analyzer.sheet</field>
             <field name="arch" type="xml">
                 <tree editable="bottom" string="DERDER">
-                    <field name="categ_id" invisible="True"/>
-                    <field name="product_id"/>
+<!--                    <field name="categ_id" invisible="True"/>-->
+<!--                    <field name="product_id"/>-->
                     <field name="sku"/>
                     <field name="title"/>
                     <field name="direct" optional="hide"/>
