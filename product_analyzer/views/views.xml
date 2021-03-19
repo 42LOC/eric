@@ -7,8 +7,9 @@
             <field name="model">product_analyzer</field>
             <field name="arch" type="xml">
                 <tree>
-<!--                    <field name="default_code"/>-->
+                    <field name="name"/>
                     <field name="start_date"/>
+                    <field name="available"/>
                 </tree>
             </field>
         </record>
@@ -19,12 +20,14 @@
             <field name="arch" type="xml">
                 <form string="Idea form">
                     <sheet>
-                        <group colspan="4">
-                            <group colspan="2">
-                                <separator string="Form" colspan="3"/>
-                                <field name="start_date"/>
-                                <field name="categ_id"/>
-                                <button string="Generate Sheet" class="btn-primary"/>
+                        <group colspan="2" col="4">
+                            <group colspan="2" col="3">
+                                <separator string="Production Sheet" colspan="3"/>
+                                <field name="name" readonly="True" colspan="3"/>
+                                <field name="create_date" readonly="True" colspan="3"/>
+                                <field name="start_date" colspan="3"/>
+                                <field name="categ_id" colspan="3"/>
+                                <button string="Generate Sheet" type="object" name="generate_sheet" class="btn-primary"/>
                             </group>
                         </group>
                         <field name="line_ids"/>
@@ -37,22 +40,20 @@
             <field name="name">product.analyzer.tree</field>
             <field name="model">product_analyzer.sheet</field>
             <field name="arch" type="xml">
-                <tree editable="bottom">
-                    <field name="categ_id" invisible="True"/>
-                    <field name="product_id"/>
+                <tree editable="bottom" string="DERDER">
+<!--                    <field name="categ_id" invisible="True"/>-->
+<!--                    <field name="product_id"/>-->
                     <field name="sku"/>
                     <field name="title"/>
-                    <field name="direct"/>
-                    <field name="replenishment"/>
+                    <field name="direct" optional="hide"/>
+                    <field name="inbound" optional="hide"/>
                     <field name="sold"/>
                     <field name="inventory"/>
-                    <field name="demand"/>
+                    <field name="send_in"/>
                     <field name="production"/>
                     <field name="actual_demand"/>
-                    <field name="actual_production"/>
+                    <field name="actual_cut"/>
                     <field name="completed"/>
-<!--                    <field name="product_id"/>-->
-                    <!--                    <field name="value2"/>-->
                 </tree>
             </field>
         </record>
@@ -60,7 +61,7 @@
         <!-- actions opening views on models -->
 
         <record model="ir.actions.act_window" id="product_analyzer.action_window">
-            <field name="name">Product Analyzer</field>
+            <field name="name">Production Sheets</field>
             <field name="res_model">product_analyzer</field>
             <field name="view_mode">tree,form</field>
         </record>
@@ -88,8 +89,8 @@
 
         <!-- menu categories -->
 
-        <menuitem name="Menu 1" id="product_analyzer.menu_1" parent="product_analyzer.menu_root"/>
-<!--        <menuitem name="Menu 2" id="product_analyzer.menu_2" parent="product_analyzer.menu_root"/>-->
+        <menuitem name="Menu" id="product_analyzer.menu_1" parent="product_analyzer.menu_root"/>
+        <!--        <menuitem name="Menu 2" id="product_analyzer.menu_2" parent="product_analyzer.menu_root"/>-->
 
         <!-- actions -->
 
