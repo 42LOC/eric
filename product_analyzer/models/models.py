@@ -2,7 +2,6 @@
 
 from odoo import models, fields, api
 import datetime
-import time
 from dateutil import relativedelta
 
 
@@ -27,19 +26,43 @@ class ProductAnalyzer(models.Model):
                         f'- {line.create_date.strftime("%m/%d/%Y")}'
 
     def generate_sheet(self):
-        products = self.env['product.template'].search([('categ_id', '=', self.categ_id.id)]).product_variant_id.ids
+        products = self.env['product.template'].search(
+            [('categ_id', '=', self.categ_id.id)]).product_variant_id
         order = self.env['sale.order'].search(
             ['&', ('date_order', '>=', self.start_date), ('date_order', '<=', self.create_date)]).ids
-        result = self.env['sale.order.line'].search(['&', ('product_id', 'in', products), ('order_id', 'in', order)])
-        for i in result:
-            self.env['product_analyzer.sheet'].create({
-                # 'product_id': i.product_id.id,
-                'direct': i.product_uom_qty,
-                'title': i.name,
-                'sku': i.product_id.barcode,
-                'sheet_id': self.id,
-                'inventory': i.product_id.qty_available
-            })
+        for line in self.line_ids:
+            if line.category_id.id != self.categ_id.id:
+                line.unlink()
+        if products:
+            for product in products:
+                sheet = self.env['product_analyzer.sheet'].search(
+                    ['&', ('title', '=', product.name), ('sheet_id', '=', self.id)])
+                if order and products:
+                    self.env.cr.execute(f"""SELECT SUM (product_uom_qty) AS total
+                                        FROM sale_order_line
+                                        WHERE product_id = {product.id} AND order_id IN %s """,
+                                        [tuple(order)])
+                    result = self.env.cr.dictfetchall()
+                    if not sheet.id:
+                        self.env['product_analyzer.sheet'].create({
+                            'direct': result[0]['total'],
+                            'title': product.name,
+                            # 'sku': i.product_id.barcode,
+                            'sheet_id': self.id,
+                            'inventory': product.qty_available,
+                            'category_id': product.categ_id.id
+                        })
+                    else:
+                        sheet.update({
+                            'direct': result[0]['total'],
+                            # 'title': product.name,
+                            # 'sku': i.product_id.barcode,
+                            # 'sheet_id': self.id,
+                            'inventory': product.qty_available,
+                            'category_id': product.categ_id.id
+                        })
+                else:
+                    sheet.unlink()
 
 
 class ProductAnalyzerSheet(models.Model):
@@ -47,22 +70,15 @@ class ProductAnalyzerSheet(models.Model):
     _description = 'product_analyzer_sheet'
 
     sheet_id = fields.Many2one('product_analyzer')
-    # categ_id = fields.Many2one(related='sheet_id.categ_id')
-    # product_id = fields.Many2one('product.product', string='Product',
-    #                              domain="[('categ_id', '=', categ_id)]")
-    sku = fields.Char(string='SKU',)
-                      # related='product_id.barcode')
-    title = fields.Char(string='Title',)
-                        # related='product_id.product_tmpl_id.name')
+    category_id = fields.Many2one('product.category')
+    sku = fields.Char(string='SKU', )
+    title = fields.Char(string='Title', )
     direct = fields.Float(string='Direct')
-                          # related='product_id.stock_move_ids.product_uom_qty')
     inbound = fields.Float(string='Inbound')
-    sold = fields.Float(string='Qty Sold', compute='_compute_production')
-    inventory = fields.Float(string='Inventory',)
-                             # related='product_id.qty_available')
+    sold = fields.Float(string='Qty Sold', store=True, compute='_compute_production')
+    inventory = fields.Float(string='Inventory', )
     send_in = fields.Float(string='Send In')
-    production = fields.Float(string='Production',
-                              compute='_compute_production')
+    production = fields.Float(string='Production', store=True, compute='_compute_production')
     actual_demand = fields.Float(string='Actual Demand')
     actual_cut = fields.Float(string='Actual Cut')
     completed = fields.Date(string='Completed')
