@@ -46,7 +46,7 @@ class ProductAnalyzer(models.Model):
                     if not sheet.id:
                         self.env['product_analyzer.sheet'].create({
                             'direct': result[0]['total'],
-                            'title': product.name,
+                            'title': product.display_name,
                             # 'sku': i.product_id.barcode,
                             'sheet_id': self.id,
                             'inventory': product.qty_available,
