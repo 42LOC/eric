@@ -7,6 +7,7 @@
             <field name="model">product_analyzer</field>
             <field name="arch" type="xml">
                 <tree>
+                    <field name="active" invisible="1"/>
                     <field name="name"/>
                     <field name="start_date"/>
                     <field name="available"/>
@@ -23,6 +24,7 @@
                         <group colspan="2" col="4">
                             <group colspan="2" col="3">
                                 <separator string="Production Sheet" colspan="3"/>
+                                <field name="active" invisible="1"/>
                                 <field name="name" readonly="True" colspan="3"/>
                                 <field name="create_date" readonly="True" colspan="3"/>
                                 <field name="start_date" colspan="3"/>

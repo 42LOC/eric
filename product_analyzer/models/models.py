@@ -18,6 +18,7 @@ class ProductAnalyzer(models.Model):
     line_ids = fields.One2many('product_analyzer.sheet', 'sheet_id')
     start_date = fields.Date(string='Order history start date',
                              default=datetime.date.today() - relativedelta.relativedelta(months=1))
+    active = fields.Boolean(default=True)
 
     @api.depends('start_date')
     def _get_compute_name(self):
@@ -71,17 +72,18 @@ class ProductAnalyzerSheet(models.Model):
 
     sheet_id = fields.Many2one('product_analyzer')
     category_id = fields.Many2one('product.category')
-    sku = fields.Char(string='SKU', )
-    title = fields.Char(string='Title', )
+    sku = fields.Char(string='SKU')
+    title = fields.Char(string='Title')
     direct = fields.Float(string='Direct')
     inbound = fields.Float(string='Inbound')
     sold = fields.Float(string='Qty Sold', store=True, compute='_compute_production')
-    inventory = fields.Float(string='Inventory', )
+    inventory = fields.Float(string='Inventory')
     send_in = fields.Float(string='Send In')
     production = fields.Float(string='Production', store=True, compute='_compute_production')
     actual_demand = fields.Float(string='Actual Demand')
     actual_cut = fields.Float(string='Actual Cut')
     completed = fields.Date(string='Completed')
+    active = fields.Boolean(default=True)
 
     @api.depends('inventory', 'send_in', 'direct', 'inbound')
     def _compute_production(self):
